@@ -11,7 +11,9 @@
     <properties>
         <flink.version>1.9.1</flink.version>
         <blink.version>1.5.1</blink.version>
-        <scala.binary.version>2.12</scala.binary.version>
+        <ylink.version>1.0.0</ylink.version>
+        <mlink.version>1.0.0</mlink.version>
+        <scala.binary.version>2.11</scala.binary.version>
         <commons-cli.version>1.3.1</commons-cli.version>
         <calcite.version>1.20.0</calcite.version>
         <avatica-core.version>1.15.0</avatica-core.version>
@@ -51,6 +53,11 @@
             <artifactId>flink-yarn_${scala.binary.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-sql-parser</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>commons-cli</groupId>
@@ -75,31 +82,8 @@
             <version>${okhttp.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-sql-parser</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-
         <!-- connectors dependency start -->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
-            <version>${flink.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-jdbc_2.11</artifactId>
-            <version>${flink.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-json</artifactId>
-            <version>${flink.version}</version>
-            <scope>test</scope>
-        </dependency>
+
         <!-- connectors dependency end -->
     </dependencies>
 

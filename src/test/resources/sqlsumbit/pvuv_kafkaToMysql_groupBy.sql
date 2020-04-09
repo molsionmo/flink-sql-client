@@ -14,13 +14,15 @@ CREATE TABLE user_log (
     'connector.startup-mode' = 'earliest-offset',-- 从起始 offset 开始读取
     'connector.properties.0.key' = 'bootstrap.servers',-- 连接信息
     'connector.properties.0.value' = 'localhost:9092',
-    'update-mode' = 'append',
+    'connector.properties.1.key' = 'group.id',
+    'connector.properties.1.value' = 'testGroup',
     'format.type' = 'json',-- 数据源格式为 json
+    'update-mode' = 'append',
     'format.derive-schema' = 'true'-- 从 DDL schema 确定 json 解析规则
 );
 
 CREATE TABLE pvuv_sink (
-    dt VARCHAR,
+    category_id VARCHAR,
     pv BIGINT,
     uv BIGINT
 ) WITH (
@@ -34,7 +36,7 @@ CREATE TABLE pvuv_sink (
 
 INSERT INTO pvuv_sink
 SELECT
-  category_id AS dt,
+  category_id,
   COUNT(*) AS pv,
   COUNT(DISTINCT user_id) AS uv
 FROM user_log

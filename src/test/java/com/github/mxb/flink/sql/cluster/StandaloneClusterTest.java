@@ -57,7 +57,6 @@ public class StandaloneClusterTest {
     public void tearDown() throws Exception {
     }
 
-    //TODO dependencyJarDir依赖
     @Test
     public void kafkaToMysql() throws IOException, FlinkException, FlinkClientTimeoutException, SqlParseException {
         JobRunConfig jobRunConfig = JobRunConfig.builder()
@@ -68,7 +67,7 @@ public class StandaloneClusterTest {
         String dependencyJarDir = dependencyJarsDir;
 
         String sql = Files.toString(new File(getClass().getClassLoader().getResource("sqlsumbit/kafkaToMysql.sql").getPath()), Charsets.UTF_8);
-        ProgramTargetDescriptor programTargetDescriptor = clusterClient.executeSqlJob(jobRunConfig,new ArrayList<>(),sql);
+        ProgramTargetDescriptor programTargetDescriptor = clusterClient.executeSqlJob(jobRunConfig,dependencyJarDir,sql);
 
         log.info("jobId: {}",programTargetDescriptor.getJobId());
     }

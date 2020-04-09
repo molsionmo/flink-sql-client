@@ -2,6 +2,7 @@ package com.github.mxb.flink.sql.model.run;
 
 import lombok.Builder;
 import lombok.Data;
+import org.apache.flink.table.types.DataType;
 import org.apache.flink.types.Row;
 
 import java.util.List;
