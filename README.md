@@ -10,7 +10,8 @@ SQL任务提交 | 支持standalone集群, flink on yarn session集群的远程SQ
 任务操作 | 支持standalone集群, flink on yarn session集群的远程任务面向jobId进行stop(WithOrWithoutSavepoint),cancel(WithOrWithoutSavepoint),triggerSavepoint | 不支持
 任务执行状态查询 | 支持standalone集群, flink on yarn session集群的远程任务运行状态查询 | 不支持
 多Insert into任务支持 | 支持多Insert into语句的多Sink SQL任务 | 支持
-UDF包动态加载 | 支持SQL job动态加载UDF包,每一个SQL job可以在画图时指定特定的UDF包 | 不支持动态加载,需要预先加载
+UDF包动态加载 | 支持SQL job动态加载UDF包,每一个SQL job可以在画图时指定特定的UDF包 | 不支持
+Connector包动态加载 | 支持SQL job动态加载Connector包,每一个SQL job可以在画图时指定特定的Connector包 | 不支持
 
 ## quick start
 
