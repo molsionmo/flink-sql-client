@@ -36,10 +36,6 @@ public class StandaloneClusterClientTest {
     public void setUp() throws Exception {
         resourceInfo = new ResourceInfo();
         resourceInfo.setResourceType(ResourceType.STANDALONE);
-        resourceInfo.setJmAddress(jmAddress);
-
-        resourceInfo.setResourceType(ResourceType.STANDALONE);
-        resourceInfo.setJmAddress(jmAddress);
         clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(resourceInfo);
 
         StandAloneClusterId standAloneClusterId = new StandAloneClusterId("127.0.0.1", 8081);

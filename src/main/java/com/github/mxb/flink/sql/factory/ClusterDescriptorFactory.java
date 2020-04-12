@@ -62,15 +62,15 @@ public class ClusterDescriptorFactory {
     private static YarnClusterDescriptor createYarnClusterDescriptor(
             ResourceInfo resourceInfo,
             Configuration flinkConfiguration) throws IOException {
-        if (resourceInfo.getAuthType() != AuthType.KERBEROS || resourceInfo.getAuthType() != AuthType.NONE) {
+        if (resourceInfo.getAuthType() != AuthType.KERBEROS && resourceInfo.getAuthType() != AuthType.NONE) {
             throw new UnsupportedOperationException("暂不支持KERBEROS 与 NONE 以外的认证类型");
         }
 
         YarnConfiguration yarnConfiguration = new YarnConfiguration();
-        String tmpYarnConfPath = copyYarnConfToFile(resourceInfo.getYarnRmAddress(), resourceInfo.getResourceId());
-        yarnConfiguration.addResource(new Path(tmpYarnConfPath));
 
         if (resourceInfo.getAuthType() == AuthType.KERBEROS) {
+            String tmpYarnConfPath = copyYarnConfToFile(resourceInfo.getYarnRmAddress(), resourceInfo.getResourceId());
+            yarnConfiguration.addResource(new Path(tmpYarnConfPath));
             // init system property
             System.setProperty(YarnClusterConfig.KRB5_CONF, StringUtils.isBlank(resourceInfo.getKrb5ConfFilePath()) ? DEFAULT_KRB_5_CONF : resourceInfo.getKrb5ConfFilePath());
             System.setProperty(YarnClusterConfig.KRB5_REALM, resourceInfo.getKrb5Realm());
