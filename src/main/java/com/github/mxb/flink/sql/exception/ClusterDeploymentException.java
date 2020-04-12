@@ -3,7 +3,9 @@ package com.github.mxb.flink.sql.exception;
 import org.apache.flink.util.FlinkException;
 
 /**
- * Class which indicates a problem when deploying a Flink resource.
+ * @description     Class which indicates a problem when deploying a Flink resource.
+ * @auther          moxianbin
+ * @create          2020-04-12 11:34:53
  */
 public class ClusterDeploymentException extends FlinkException {
 

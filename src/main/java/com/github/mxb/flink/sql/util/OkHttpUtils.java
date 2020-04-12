@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 提供常用Http请求的封装
+ *
+ * @author moxianbin
  */
 public final class OkHttpUtils {
 

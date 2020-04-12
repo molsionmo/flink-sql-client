@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * @author mxb
+ *@description     StandaloneClusterDescriptor
+ *@auther          moxianbin
+ *@create          2020-04-11 19:11:45
  */
 public class StandaloneClusterDescriptor implements ClusterDescriptor<StandAloneClusterId, StandaloneClusterReport> {
 

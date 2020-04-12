@@ -1,7 +1,9 @@
 package com.github.mxb.flink.sql.cluster.config;
 
 /**
- * @author mxb
+ *@description     YarnClusterConfig
+ *@auther          moxianbin
+ *@create          2020-04-11 19:10:39
  */
 public class YarnClusterConfig {
 

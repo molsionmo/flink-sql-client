@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @Slf4j
-public class StandaloneClusterTest {
+public class StandaloneClusterClientTest {
 
     private String jmAddress = "http://127.0.0.1:8081";
 
@@ -40,9 +40,7 @@ public class StandaloneClusterTest {
 
         resourceInfo.setResourceType(ResourceType.STANDALONE);
         resourceInfo.setJmAddress(jmAddress);
-        clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(
-                resourceInfo
-        );
+        clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(resourceInfo);
 
         StandAloneClusterId standAloneClusterId = new StandAloneClusterId("127.0.0.1", 8081);
         clusterClient = clusterDescriptor.retrieve(standAloneClusterId);
@@ -72,8 +70,6 @@ public class StandaloneClusterTest {
         log.info("jobId: {}",programTargetDescriptor.getJobId());
     }
 
-
-    // TODO  InvalidClassException异常 local class incompatible serialVersionUID
     @Test
     public void groupByTest() throws IOException, FlinkException, FlinkClientTimeoutException, SqlParseException {
         String dependencyJarDir = dependencyJarsDir;

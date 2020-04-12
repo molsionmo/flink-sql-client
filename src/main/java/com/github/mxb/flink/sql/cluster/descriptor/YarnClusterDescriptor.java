@@ -25,7 +25,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * @author mxb
+ *@description     YarnClusterDescriptor
+ *@auther          moxianbin
+ *@create          2020-04-11 19:12:14
  */
 public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId, ApplicationReport> {
 

@@ -3,7 +3,9 @@ package com.github.mxb.flink.sql.exception;
 import org.apache.flink.util.FlinkException;
 
 /**
- * Exception which indicates that a cluster resource could not be retrieved.
+ * @description     Exception which indicates that a cluster resource could not be retrieved.
+ * @auther          moxianbin
+ * @create          2020-04-12 11:35:13
  */
 public class ClusterRetrieveException extends FlinkException {
 

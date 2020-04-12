@@ -43,10 +43,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * <p>AbstractClusterClient</p>
- *
- * @author moxianbin
- * @since 2020-04-05
+ *@description     AbstractClusterClient
+ *@auther          moxianbin
+ *@create          2020-04-11 19:12:45
  */
 public abstract class AbstractClusterClient<T> implements ClusterClient<T> {
 

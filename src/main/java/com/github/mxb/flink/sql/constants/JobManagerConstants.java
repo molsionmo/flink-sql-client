@@ -6,10 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * <p>define executor properties</p>
- *
- * @author moxianbin
- * @since 2019/5/9 9:13
+ * @description     define executor properties
+ * @auther          moxianbin
+ * @create          2020-04-11 20:46:37
  */
 public class JobManagerConstants {
 

@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.Objects;
 
 /**
- * Resource Info that can get the resource application
+ *@description     Resource Info that can get the resource application
+ *@auther          moxianbin
+ *@create          2020-04-11 19:12:28
  */
 @Data
 @Builder

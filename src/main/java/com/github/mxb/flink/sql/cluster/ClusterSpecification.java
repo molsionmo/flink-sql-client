@@ -25,7 +25,9 @@ import org.apache.flink.configuration.JobManagerOptions;
 import org.apache.flink.configuration.TaskManagerOptions;
 
 /**
- * Description of the resource to start by the {@link ClusterDescriptor}.
+ * @description     Description of the resource to start by the {@link ClusterDescriptor}.
+ * @auther          moxianbin
+ * @create          2020-04-11 20:44:42
  */
 @Data
 @Builder

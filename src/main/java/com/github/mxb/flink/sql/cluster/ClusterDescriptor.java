@@ -8,8 +8,9 @@ import org.apache.hadoop.yarn.exceptions.YarnException;
 import java.io.IOException;
 
 /**
- * A descriptor to deploy a cluster resource(eg YARN or K8S)
- *
+ * @description     TODO
+ * @auther          moxianbin
+ * @create          2020-04-11 20:44:18
  * @param <T> type of the resource id
  * @param <S> type of the cluster status
  */

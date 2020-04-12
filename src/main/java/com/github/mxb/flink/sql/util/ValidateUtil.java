@@ -6,6 +6,11 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * @description     ValidateUtil
+ * @auther          moxianbin
+ * @create          2020-04-12 11:40:19
+ */
 public class ValidateUtil {
     private ValidateUtil(){}
 

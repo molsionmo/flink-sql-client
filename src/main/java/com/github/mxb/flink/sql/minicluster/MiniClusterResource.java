@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * ExecutionEnvironment and StreamExecutionEnvironment.
  *
  * @author moxianbin
- * @since 2019/5/10 17:36
+ * @since 2020/4/10 17:36
  */
 public class MiniClusterResource {
 

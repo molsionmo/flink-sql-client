@@ -5,7 +5,7 @@ package com.github.mxb.flink.sql.minicluster;
  * It can get the only one MiniCluster in the environment
  *
  * @author moxianbin
- * @since 2019/5/13 14:09
+ * @since 2020/4/13 14:09
  */
 public class MiniClusterManage {
 

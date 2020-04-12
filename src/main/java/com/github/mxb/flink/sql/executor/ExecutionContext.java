@@ -61,7 +61,7 @@ import java.util.function.Supplier;
  * it might be reused across different query submissions.</p>
  *
  * @param <T> cluster id
- * @author moxianbin on 2019/4/24 11:36
+ * @author moxianbin on 2020/4/5 11:36
  */
 public class ExecutionContext<T> {
     private final SessionContext sessionContext;

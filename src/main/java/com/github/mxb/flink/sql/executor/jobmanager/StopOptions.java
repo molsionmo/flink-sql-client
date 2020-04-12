@@ -25,7 +25,9 @@ import static org.apache.flink.client.cli.CliFrontendParser.STOP_AND_DRAIN;
 import static org.apache.flink.client.cli.CliFrontendParser.STOP_WITH_SAVEPOINT_PATH;
 
 /**
- * Command line options for the STOP command.
+ * @description     Command line options for the STOP command.
+ * @auther          moxianbin
+ * @create          2020-04-12 11:36:54
  */
 class StopOptions extends CommandLineOptions {
 

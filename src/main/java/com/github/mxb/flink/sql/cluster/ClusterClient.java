@@ -15,6 +15,11 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @description     ClusterClient
+ * @auther          moxianbin
+ * @create          2020-04-11 20:43:26
+ */
 public interface ClusterClient<T> {
 
     /**

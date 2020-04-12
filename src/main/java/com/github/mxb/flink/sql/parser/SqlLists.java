@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author mxb
+ * @author moxianbin
  * @since 2020-04-05
  */
 public class SqlLists {

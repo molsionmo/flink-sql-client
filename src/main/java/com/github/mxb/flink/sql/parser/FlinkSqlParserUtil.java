@@ -18,6 +18,11 @@ import org.apache.flink.table.planner.calcite.FlinkPlannerImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @description     FlinkSqlParserUtil
+ * @auther          moxianbin
+ * @create          2020-04-12 11:39:33
+ */
 public class FlinkSqlParserUtil {
 
     private static final SqlParser.Config PARSER_CONFIG;

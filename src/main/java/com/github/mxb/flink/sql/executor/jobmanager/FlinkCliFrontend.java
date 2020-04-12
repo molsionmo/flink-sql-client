@@ -64,6 +64,9 @@ import java.util.stream.Collectors;
  * 改造自 org.apache.flink.client.cli.CliFrontend
  * 修改: cancel savepoint stop 在执行后返回对应的savepoint位置
  * Implementation of a simple command line frontend for executing programs.
+ *
+ * @auther          moxianbin
+ * @create          2020-04-12 11:36:09
  */
 public class FlinkCliFrontend {
 

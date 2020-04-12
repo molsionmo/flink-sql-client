@@ -8,7 +8,7 @@ import java.util.List;
  * <p>jobs run status info</p>
  *
  * @author moxianbin
- * @since 2019/5/9 16:46
+ * @since 2020/4/9 16:46
  */
 @Data
 public class JobsRunStatus {

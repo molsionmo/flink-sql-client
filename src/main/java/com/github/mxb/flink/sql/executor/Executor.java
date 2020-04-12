@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
  * <p>A gateway for communicating with Flink and other external systems.</p>
  *
  * @author moxianbin
- * @since 2019/5/8 15:17
+ * @since 2020/4/8 15:17
  */
 public interface Executor {
 

@@ -7,7 +7,7 @@ import lombok.Data;
  * job run config
  *
  * @author moxianbin
- * @since 2019/5/8 16:20
+ * @since 2020/4/8 16:20
  */
 @Data
 @Builder

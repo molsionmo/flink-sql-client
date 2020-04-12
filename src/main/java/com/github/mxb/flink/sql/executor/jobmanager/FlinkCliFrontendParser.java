@@ -31,6 +31,8 @@ import java.util.Collection;
 /**
  * A simple command line parser (based on Apache Commons CLI) that extracts command
  * line options.
+ *
+ * @author moxianbin
  */
 public class FlinkCliFrontendParser {
 
