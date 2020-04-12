@@ -5,20 +5,34 @@
 ## quick start
 
 ### standalone模式
+
 * 启动flink standalone集群,rest端口为8081
 * 运行com.github.mxb.flink.sql.cluster.StandaloneClusterTest中的kafkaToMysqlTest测试用例
 
+#### Test用例
+
+* com.github.mxb.flink.sql.cluster.StandaloneClusterTest.kafkaToMysqlTest测试用例
+  * 完整SQL
+![完整SQL](img/kafkaToMysql1.png)
+  * 执行StandaloneClusterTest中的kafkaToMysqlTest测试用例
+![执行测试用例](img/kafkaToMysql2.png)
+  * flink-standalone集群job信息
+![flink-standalone集群job信息](img/kafkaToMysql3.png)
+
 ### flink on yarn模式
+
 * 启动flink on yarn集群,获得applicationId
 * 运行com.github.mxb.flink.sql.cluster.YarnClusterClientTest中的kafkaToMysqlTest测试用例
 
 ### 本地Minicluster模式
-* 运行com.github.mxb.flink.sql.executor.LocalExecutorTest里面的测试用例
+
+* 运行com.github.mxb.flink.sql.executor.LocalExecutorTest里面的测试用例(可用于本地调试分布式任务)
 
 ## sdk quick start
 
 * 项目引入flink-sql-client
-```
+
+```maven
 <dependency>
     <groupId>com.github.mxb</groupId>
     <artifactId>flink-sql-client</artifactId>
@@ -26,14 +40,14 @@
 </dependency>
 ```
 
-* 实例化取出clusterClient
+* 实例化取出clusterClient并执行SQL job
+
 ```java
 public class Test{
-    
     public ClusterClient getClusterClient(){
         ResourceInfo standaloneResourceInfo = new ResourceInfo();
         standaloneResourceInfo.setResourceType(ResourceType.STANDALONE);
-        
+
         ClusterDescriptor clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(standaloneResourceInfo);
         StandAloneClusterId standAloneClusterId = new StandAloneClusterId("127.0.0.1", 8081);
         ClusterClient clusterClient = clusterDescriptor.retrieve(standAloneClusterId);
@@ -48,7 +62,7 @@ public class Test{
                         .checkpointInterval(60_000L).build();
         ProgramTargetDescriptor programTargetDescriptor = clusterClient.executeSqlJob(jobRunConfig, dependencyJars, sql);
         return programTargetDescriptor.getJobId();
-    }   
+    }
 
 }
 ```
