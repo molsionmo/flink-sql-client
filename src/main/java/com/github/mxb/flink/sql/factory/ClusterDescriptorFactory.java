@@ -5,7 +5,7 @@ import com.github.mxb.flink.sql.cluster.config.YarnClusterConfig;
 import com.github.mxb.flink.sql.cluster.descriptor.StandaloneClusterDescriptor;
 import com.github.mxb.flink.sql.cluster.descriptor.YarnClusterDescriptor;
 import com.github.mxb.flink.sql.cluster.resource.AuthType;
-import com.github.mxb.flink.sql.cluster.resource.ResourceInfo;
+import com.github.mxb.flink.sql.cluster.resource.FlinkResourceInfo;
 import com.github.mxb.flink.sql.cluster.resource.ResourceType;
 import com.github.mxb.flink.sql.util.OkHttpUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -28,56 +28,56 @@ public class ClusterDescriptorFactory {
     private static final String DEFAULT_KRB_5_CONF = "/etc/krb5.conf";
 
     public static ClusterDescriptor createClusterDescriptor(
-            ResourceInfo resourceInfo) throws IOException {
-        return createClusterDescriptor(resourceInfo, new Configuration());
+            FlinkResourceInfo flinkResourceInfo) throws IOException {
+        return createClusterDescriptor(flinkResourceInfo, new Configuration());
     }
 
     public static ClusterDescriptor createClusterDescriptor(
-            ResourceInfo resourceInfo,
+            FlinkResourceInfo flinkResourceInfo,
             Configuration flinkConfiguration) throws IOException {
-        if (!resourceInfo.getResourceType().isSupported()) {
-            throw new UnsupportedOperationException("暂不支持的资源类型:" + resourceInfo.getResourceType().name());
+        if (!flinkResourceInfo.getResourceType().isSupported()) {
+            throw new UnsupportedOperationException("暂不支持的资源类型:" + flinkResourceInfo.getResourceType().name());
         }
 
-        resourceInfo.validate();
+        flinkResourceInfo.validate();
 
         ClusterDescriptor clusterDescriptor = null;
-        if (resourceInfo.getResourceType().equals(ResourceType.YARN)) {
-            clusterDescriptor = createYarnClusterDescriptor(resourceInfo, flinkConfiguration);
-        } else if (resourceInfo.getResourceType().equals(ResourceType.STANDALONE)) {
-            clusterDescriptor = createStandAloneClusterDescriptor(resourceInfo, flinkConfiguration);
+        if (flinkResourceInfo.getResourceType().equals(ResourceType.YARN)) {
+            clusterDescriptor = createYarnClusterDescriptor(flinkResourceInfo, flinkConfiguration);
+        } else if (flinkResourceInfo.getResourceType().equals(ResourceType.STANDALONE)) {
+            clusterDescriptor = createStandAloneClusterDescriptor(flinkResourceInfo, flinkConfiguration);
         } else {
-            throw new UnsupportedOperationException("暂不支持的资源类型:" + resourceInfo.getResourceType().name());
+            throw new UnsupportedOperationException("暂不支持的资源类型:" + flinkResourceInfo.getResourceType().name());
         }
 
         return clusterDescriptor;
     }
 
     private static StandaloneClusterDescriptor createStandAloneClusterDescriptor(
-            ResourceInfo resourceInfo,
+            FlinkResourceInfo flinkResourceInfo,
             Configuration flinkConfiguration) throws IOException {
         return new StandaloneClusterDescriptor();
     }
 
     private static YarnClusterDescriptor createYarnClusterDescriptor(
-            ResourceInfo resourceInfo,
+            FlinkResourceInfo flinkResourceInfo,
             Configuration flinkConfiguration) throws IOException {
-        if (resourceInfo.getAuthType() != AuthType.KERBEROS && resourceInfo.getAuthType() != AuthType.NONE) {
+        if (flinkResourceInfo.getAuthType() != AuthType.KERBEROS && flinkResourceInfo.getAuthType() != AuthType.NONE) {
             throw new UnsupportedOperationException("暂不支持KERBEROS 与 NONE 以外的认证类型");
         }
 
         YarnConfiguration yarnConfiguration = new YarnConfiguration();
 
-        if (resourceInfo.getAuthType() == AuthType.KERBEROS) {
-            String tmpYarnConfPath = copyYarnConfToFile(resourceInfo.getYarnRmAddress(), resourceInfo.getResourceId());
+        if (flinkResourceInfo.getAuthType() == AuthType.KERBEROS) {
+            String tmpYarnConfPath = copyYarnConfToFile(flinkResourceInfo.getYarnRmAddress(), flinkResourceInfo.getResourceId());
             yarnConfiguration.addResource(new Path(tmpYarnConfPath));
             // init system property
-            System.setProperty(YarnClusterConfig.KRB5_CONF, StringUtils.isBlank(resourceInfo.getKrb5ConfFilePath()) ? DEFAULT_KRB_5_CONF : resourceInfo.getKrb5ConfFilePath());
-            System.setProperty(YarnClusterConfig.KRB5_REALM, resourceInfo.getKrb5Realm());
-            System.setProperty(YarnClusterConfig.KRB5_KDC, resourceInfo.getKrb5Kdc());
+            System.setProperty(YarnClusterConfig.KRB5_CONF, StringUtils.isBlank(flinkResourceInfo.getKrb5ConfFilePath()) ? DEFAULT_KRB_5_CONF : flinkResourceInfo.getKrb5ConfFilePath());
+            System.setProperty(YarnClusterConfig.KRB5_REALM, flinkResourceInfo.getKrb5Realm());
+            System.setProperty(YarnClusterConfig.KRB5_KDC, flinkResourceInfo.getKrb5Kdc());
             // yarn configure and kerb5 authentication
             UserGroupInformation.setConfiguration(yarnConfiguration);
-            UserGroupInformation.loginUserFromKeytab(resourceInfo.getKeytabPrinciple(), resourceInfo.getKeytabPath());
+            UserGroupInformation.loginUserFromKeytab(flinkResourceInfo.getKeytabPrinciple(), flinkResourceInfo.getKeytabPath());
         }
 
         // start yarn client

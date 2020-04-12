@@ -1,11 +1,10 @@
 package com.github.mxb.flink.sql.factory;
 
 
-import com.github.mxb.flink.sql.executor.Executor;
-import com.github.mxb.flink.sql.executor.LocalExecutor;
-import com.github.mxb.flink.sql.minicluster.MiniClusterResource;
-import com.github.mxb.flink.sql.util.ValidateUtil;
-import org.apache.flink.table.api.ValidationException;
+import com.github.mxb.flink.sql.local.Executor;
+import com.github.mxb.flink.sql.local.LocalExecutor;
+import com.github.mxb.flink.sql.cluster.minicluster.MiniClusterResource;
+import com.github.mxb.flink.sql.util.ValidateUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +45,7 @@ public class ExecutorFactory {
     private static void validateProperties(Executor executor, Map<String, String> properties) {
         List<String> requiredProperties = executor.requiredProperties();
         requiredProperties.forEach(requiredProperty->{
-            ValidateUtil.validateOptional(properties, requiredProperty, false);
+            ValidateUtils.validateOptional(properties, requiredProperty, false);
         });
         List<String> supportedProperties = executor.supportedProperties();
 //        properties.forEach((key,value)->{

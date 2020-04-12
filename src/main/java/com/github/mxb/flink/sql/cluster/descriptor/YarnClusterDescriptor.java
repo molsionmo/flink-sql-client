@@ -7,7 +7,7 @@ import com.github.mxb.flink.sql.exception.ClusterDeploymentException;
 import com.github.mxb.flink.sql.exception.ClusterKillException;
 import com.github.mxb.flink.sql.exception.ClusterRetrieveException;
 import com.github.mxb.flink.sql.cluster.ClusterClient;
-import com.github.mxb.flink.sql.cluster.client.JobManagerClusterClient;
+import com.github.mxb.flink.sql.cluster.client.JobManagerClient;
 import com.github.mxb.flink.sql.cluster.status.YarnClusterStatus;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.JobManagerOptions;
@@ -99,7 +99,7 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId, A
     }
 
     protected ClusterClient<ApplicationId> createYarnClusterClient(Configuration flinkConfiguration){
-        return new JobManagerClusterClient<>(flinkConfiguration);
+        return new JobManagerClient<>(flinkConfiguration);
     }
 
     @Override
@@ -113,7 +113,5 @@ public class YarnClusterDescriptor implements ClusterDescriptor<ApplicationId, A
     }
 
     @Override
-    public void close() throws Exception {
-        // TODO 完善整个资源关闭链
-    }
+    public void close() throws Exception { }
 }

@@ -3,11 +3,11 @@ package com.github.mxb.flink.sql.cluster;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.github.mxb.flink.sql.cluster.descriptor.StandAloneClusterId;
-import com.github.mxb.flink.sql.cluster.resource.ResourceInfo;
+import com.github.mxb.flink.sql.cluster.resource.FlinkResourceInfo;
 import com.github.mxb.flink.sql.cluster.resource.ResourceType;
 import com.github.mxb.flink.sql.exception.FlinkClientTimeoutException;
 import com.github.mxb.flink.sql.factory.ClusterDescriptorFactory;
-import com.github.mxb.flink.sql.model.run.JobRunConfig;
+import com.github.mxb.flink.sql.cluster.model.run.JobRunConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.sql.parser.error.SqlParseException;
 import org.apache.flink.table.client.gateway.ProgramTargetDescriptor;
@@ -18,7 +18,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.UUID;
 
 @Slf4j
@@ -26,7 +25,7 @@ public class StandaloneClusterClientTest {
 
     private String jmAddress = "http://127.0.0.1:8081";
 
-    private ResourceInfo resourceInfo;
+    private FlinkResourceInfo flinkResourceInfo;
     private ClusterDescriptor clusterDescriptor;
     private ClusterClient clusterClient;
     private String dependencyJarsDir = "./dependencies";
@@ -34,9 +33,9 @@ public class StandaloneClusterClientTest {
 
     @Before
     public void setUp() throws Exception {
-        resourceInfo = new ResourceInfo();
-        resourceInfo.setResourceType(ResourceType.STANDALONE);
-        clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(resourceInfo);
+        flinkResourceInfo = new FlinkResourceInfo();
+        flinkResourceInfo.setResourceType(ResourceType.STANDALONE);
+        clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(flinkResourceInfo);
 
         StandAloneClusterId standAloneClusterId = new StandAloneClusterId("127.0.0.1", 8081);
         clusterClient = clusterDescriptor.retrieve(standAloneClusterId);
@@ -89,13 +88,13 @@ public class StandaloneClusterClientTest {
 
     @Test
     public void cancelJobWithoutSavepoint() throws FlinkException, FlinkClientTimeoutException {
-        String savepointPath = clusterClient.cancelJob("487b9e1c8c388aa3c951da771505791a", "file:///Users/mac/opt/flink-1.9.1/savepoint");
+        String savepointPath = clusterClient.cancel("487b9e1c8c388aa3c951da771505791a", "file:///Users/mac/opt/flink-1.9.1/savepoint");
         log.info("{}", savepointPath);
     }
 
     @Test
     public void stopJobWithoutSavepoint() throws FlinkException, FlinkClientTimeoutException {
-        String savepointPath = clusterClient.stopJob("487b9e1c8c388aa3c951da771505791a", "file:///Users/mac/opt/flink-1.9.1/savepoint");
+        String savepointPath = clusterClient.stop("487b9e1c8c388aa3c951da771505791a", "file:///Users/mac/opt/flink-1.9.1/savepoint");
         log.info("{}", savepointPath);
     }
 

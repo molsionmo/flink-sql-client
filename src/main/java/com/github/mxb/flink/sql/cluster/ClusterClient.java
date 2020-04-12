@@ -1,11 +1,11 @@
 package com.github.mxb.flink.sql.cluster;
 
 import com.github.mxb.flink.sql.exception.FlinkClientTimeoutException;
-import com.github.mxb.flink.sql.model.monitor.JobMonitorOverview;
-import com.github.mxb.flink.sql.model.monitor.JobRunStatusEnum;
-import com.github.mxb.flink.sql.model.run.JobConfig;
-import com.github.mxb.flink.sql.model.run.JobRunConfig;
-import com.github.mxb.flink.sql.model.run.ProgramResultDescriptor;
+import com.github.mxb.flink.sql.cluster.model.run.overview.JobRunOverview;
+import com.github.mxb.flink.sql.cluster.model.run.overview.JobRunStatusEnum;
+import com.github.mxb.flink.sql.cluster.model.run.JobConfig;
+import com.github.mxb.flink.sql.cluster.model.run.JobRunConfig;
+import com.github.mxb.flink.sql.cluster.model.run.ProgramResultDescriptor;
 import org.apache.flink.sql.parser.error.SqlParseException;
 import org.apache.flink.table.client.gateway.ProgramTargetDescriptor;
 import org.apache.flink.table.client.gateway.SqlExecutionException;
@@ -30,7 +30,7 @@ public interface ClusterClient<T> {
      * @return savepointPath savepoint Path
      * @throws FlinkException any flink error
      */
-    String cancelJob(String jobId, String savepointDir) throws FlinkException, FlinkClientTimeoutException;
+    String cancel(String jobId, String savepointDir) throws FlinkException, FlinkClientTimeoutException;
 
     /**
      * stop job
@@ -40,7 +40,7 @@ public interface ClusterClient<T> {
      * @throws FlinkException
      * @throws FlinkClientTimeoutException
      */
-    String stopJob(String jobId, String savepointDir) throws FlinkException, FlinkClientTimeoutException;
+    String stop(String jobId, String savepointDir) throws FlinkException, FlinkClientTimeoutException;
 
     /**
      * triggerSavepoint
@@ -103,25 +103,6 @@ public interface ClusterClient<T> {
     ProgramResultDescriptor executeQueryInternal(JobRunConfig jobRunConfig, String dependencyJarDir, String sql) throws FlinkException, SqlExecutionException, SqlParseException;
 
     /**
-     * retrieveResult by jobId
-     *
-     * @param jobId jobId
-     * @return ProgramResultDescriptor
-     * @throws FlinkException any flink error
-     */
-    ProgramResultDescriptor retrieveResult(String jobId) throws FlinkException;
-
-    /**
-     * get jobs runStatus
-     *
-     * @param jobIds jobId list
-     * @return map of jobId and runStatus
-     * @throws FlinkException any flink error
-     */
-    @Deprecated
-    Map<String, String> getJobsRunStatus(List<String> jobIds) throws FlinkException, FlinkClientTimeoutException;
-
-    /**
      * get jobs runStatus
      *
      * @param jobIds
@@ -138,7 +119,7 @@ public interface ClusterClient<T> {
      * @return map of jobId and jobMonitorOverview
      * @throws FlinkException any flink error
      */
-    Map<String, JobMonitorOverview> getJobsOverview(List<String> jobIds) throws FlinkException, FlinkClientTimeoutException;
+    Map<String, JobRunOverview> getJobsOverview(List<String> jobIds) throws FlinkException, FlinkClientTimeoutException;
 
     /**
      * getJobsOverviewUrl

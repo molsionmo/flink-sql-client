@@ -1,14 +1,13 @@
-package com.github.mxb.flink.sql.cluster;
+package com.github.mxb.flink.sql.local;
 
-import com.github.mxb.flink.sql.exception.FlinkClientTimeoutException;
 import com.github.mxb.flink.sql.cluster.execution.ExecutionContext;
 import com.github.mxb.flink.sql.cluster.execution.ProgramDeployer;
 import com.github.mxb.flink.sql.cluster.model.run.JobConfig;
 import com.github.mxb.flink.sql.cluster.model.run.JobRunConfig;
 import com.github.mxb.flink.sql.cluster.model.run.JobRunType;
 import com.github.mxb.flink.sql.parser.SqlNodeInfo;
-import com.github.mxb.flink.sql.util.ExceptionUtils;
 import com.github.mxb.flink.sql.parser.FlinkSqlParserUtil;
+import com.github.mxb.flink.sql.util.JarUtils;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
@@ -31,7 +30,6 @@ import org.apache.flink.table.client.gateway.local.result.BasicResult;
 import org.apache.flink.table.descriptors.FunctionDescriptor;
 import org.apache.flink.table.functions.FunctionService;
 import org.apache.flink.table.functions.UserDefinedFunction;
-import org.apache.flink.util.FlinkException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,17 +37,17 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- *@description     AbstractClusterClient
- *@auther          moxianbin
- *@create          2020-04-11 19:12:45
+ * <p>AbstractExecutor</p>
+ *
+ * @author moxianbin
+ * @since 2019/5/13 15:04
  */
-public abstract class AbstractClusterClient<T> implements ClusterClient<T> {
+public abstract class AbstractExecutor implements Executor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractClusterClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractExecutor.class);
 
     private static final AtomicInteger TMP_VIEW_SEQUENCE_ID = new AtomicInteger(0);
 
@@ -71,13 +69,13 @@ public abstract class AbstractClusterClient<T> implements ClusterClient<T> {
                     "    attempts: 3\n" +
                     "    delay: 10000\n" +
                     "deployment:\n" +
-                    "  response-timeout: 10000\n";
+                    "  response-timeout: 5000\n";
 
     /**
      * execute sql job with config and commandLine
      *
      * @param jobConfig
-     * @param dependencyJars
+     * @param dependencyJarDir
      * @param sql
      * @param flinkConfig
      * @param commandLineOptions
@@ -86,7 +84,7 @@ public abstract class AbstractClusterClient<T> implements ClusterClient<T> {
      * @throws SqlExecutionException
      * @throws SqlParseException
      */
-    protected ProgramTargetDescriptor executeSqlJob(JobConfig jobConfig, List<File> dependencyJars, String sql,
+    protected ProgramTargetDescriptor executeSqlJob(JobConfig jobConfig, String dependencyJarDir, String sql,
                                                     Configuration flinkConfig, Options commandLineOptions, List<CustomCommandLine<?>> commandLines) throws SqlExecutionException, SqlParseException {
 
         final Environment sessionEnv = new Environment();
@@ -94,7 +92,7 @@ public abstract class AbstractClusterClient<T> implements ClusterClient<T> {
 
         List<SqlNodeInfo> sqlNodeList = FlinkSqlParserUtil.parseSqlContext(sql);
         List<SqlNodeInfo> insertSqlNodes = sqlNodeList.stream().filter(node -> SqlKind.INSERT.lowerName.equalsIgnoreCase(node.getSqlNode().getKind().lowerName)).collect(Collectors.toList());
-        final ExecutionContext<?> context = getExecutionContext(jobConfig.getJobRunConfig(), dependencyJars, flinkConfig, commandLineOptions, commandLines, session);
+        final ExecutionContext<?> context = getExecutionContext(jobConfig.getJobRunConfig(), dependencyJarDir, flinkConfig, commandLineOptions, commandLines, session);
 
         //registerDDL
         registerDDL(sqlNodeList, context);
@@ -103,9 +101,12 @@ public abstract class AbstractClusterClient<T> implements ClusterClient<T> {
         return executeUpdate(context, insertSqlList, jobConfig);
     }
 
-    protected ExecutionContext<?> getExecutionContext(JobRunConfig jobRunConfig, List<File> dependencyJars, Configuration flinkConfig, Options commandLineOptions, List<CustomCommandLine<?>> commandLines, SessionContext session) {
+    protected ExecutionContext<?> getExecutionContext(JobRunConfig jobRunConfig, String dependencyJarDir, Configuration flinkConfig, Options commandLineOptions, List<CustomCommandLine<?>> commandLines, SessionContext session) {
         //init env and dependencyJars
         Environment environment = getEnvironment(jobRunConfig);
+
+        List<File> dependencyJars = JarUtils.getJars(dependencyJarDir);
+
         //init executionContext
         return createExecutionContext(session, environment, dependencyJars, jobRunConfig, flinkConfig, commandLineOptions, commandLines);
     }
@@ -275,21 +276,5 @@ public abstract class AbstractClusterClient<T> implements ClusterClient<T> {
         } catch (Exception e) {
             throw new SqlExecutionException("Could not create a view from ddl: " + sqlNode.getOriginSql(), e);
         }
-    }
-
-    protected static Predicate<Throwable> isConnectionProblemException(){
-        return throwable  ->
-                ExceptionUtils.findThrowable(throwable, java.net.ConnectException.class).isPresent() ||
-                        ExceptionUtils.findThrowable(throwable, java.net.SocketTimeoutException.class).isPresent() ||
-                        ExceptionUtils.findThrowable(throwable, org.apache.flink.shaded.netty4.io.netty.channel.ConnectTimeoutException.class).isPresent() ||
-                        ExceptionUtils.findThrowable(throwable, java.io.IOException.class).isPresent();
-    }
-
-    protected void reThrowException(Exception e) throws FlinkClientTimeoutException, FlinkException {
-        if ( isConnectionProblemException().test(e) ){
-            throw new FlinkClientTimeoutException(e);
-        }
-
-        throw new FlinkException(e);
     }
 }

@@ -2,13 +2,13 @@ package com.github.mxb.flink.sql.cluster;
 
 import com.github.mxb.flink.sql.cluster.descriptor.StandaloneClusterDescriptor;
 import com.github.mxb.flink.sql.cluster.resource.AuthType;
-import com.github.mxb.flink.sql.cluster.resource.ResourceInfo;
+import com.github.mxb.flink.sql.cluster.resource.FlinkResourceInfo;
 import com.github.mxb.flink.sql.cluster.resource.ResourceType;
 import com.github.mxb.flink.sql.cluster.status.YarnClusterStatus;
 import com.github.mxb.flink.sql.exception.FlinkClientTimeoutException;
 import com.github.mxb.flink.sql.factory.ClusterDescriptorFactory;
-import com.github.mxb.flink.sql.model.monitor.JobRunStatusEnum;
-import com.github.mxb.flink.sql.model.run.JobRunConfig;
+import com.github.mxb.flink.sql.cluster.model.run.overview.JobRunStatusEnum;
+import com.github.mxb.flink.sql.cluster.model.run.JobRunConfig;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -30,7 +30,6 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -42,12 +41,12 @@ public class YarnClusterClientTest {
     private String host = "http://quickstart.cloudera:8088";
     private String krb5Realm = "REAL.IO";
     private String krb5Kdc = "kdc-test.REAL.io";
-    private String principle = "kafka_hdfs@REAL.IO";
-//    private String keyTabPath = Objects.requireNonNull(getClass().getClassLoader().getResource("./krb/kafka_hdfs.keytab")).getPath();
+    private String principle = "hdfs@REAL.IO";
+//    private String keyTabPath = Objects.requireNonNull(getClass().getClassLoader().getResource("./krb/hdfs.keytab")).getPath();
 //    private String krb5ConfFilePath = Objects.requireNonNull(getClass().getClassLoader().getResource("./krb/krb5.conf")).getPath();
 
     private String applicationIdStr = "application_1586665211655_0002";
-    private ResourceInfo resourceInfo;
+    private FlinkResourceInfo flinkResourceInfo;
     private ClusterDescriptor clusterDescriptor;
     private ClusterClient clusterClient;
     private ApplicationId applicationId;
@@ -55,11 +54,11 @@ public class YarnClusterClientTest {
     private String dependencyJarsDir = "./dependencies";
     @Before
     public void setUp() throws Exception {
-        resourceInfo = new ResourceInfo();
-        resourceInfo.setResourceId("clusterResourceId");
-        resourceInfo.setResourceType(ResourceType.YARN);
-        resourceInfo.setYarnRmAddress(host);
-        resourceInfo.setAuthType(AuthType.NONE);
+        flinkResourceInfo = new FlinkResourceInfo();
+        flinkResourceInfo.setResourceId("clusterResourceId");
+        flinkResourceInfo.setResourceType(ResourceType.YARN);
+        flinkResourceInfo.setYarnRmAddress(host);
+        flinkResourceInfo.setAuthType(AuthType.NONE);
 //        resourceInfo.setKrb5Kdc(krb5Kdc);
 //        resourceInfo.setKrb5Realm(krb5Realm);
 //        resourceInfo.setKeytabPath(keyTabPath);
@@ -67,7 +66,7 @@ public class YarnClusterClientTest {
 //        resourceInfo.setKrb5ConfFilePath(krb5ConfFilePath);
 
         clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(
-                resourceInfo,
+                flinkResourceInfo,
                 new Configuration()
         );
         applicationId = ConverterUtils.toApplicationId(applicationIdStr);
@@ -76,13 +75,13 @@ public class YarnClusterClientTest {
 
     @Test
     public void createClusterDescriptor() throws IOException {
-        resourceInfo.setResourceType(ResourceType.K8S);
-        assertThatThrownBy(()->ClusterDescriptorFactory.createClusterDescriptor(resourceInfo)).hasMessage("暂不支持的资源类型:"+resourceInfo.getResourceType().name());
+        flinkResourceInfo.setResourceType(ResourceType.K8S);
+        assertThatThrownBy(()->ClusterDescriptorFactory.createClusterDescriptor(flinkResourceInfo)).hasMessage("暂不支持的资源类型:"+ flinkResourceInfo.getResourceType().name());
 
-        resourceInfo.setResourceType(ResourceType.STANDALONE);
-        resourceInfo.setJmAddress(host);
+        flinkResourceInfo.setResourceType(ResourceType.STANDALONE);
+        flinkResourceInfo.setJmAddress(host);
 
-        clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(resourceInfo);
+        clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(flinkResourceInfo);
         assertThat((AssertProvider<Boolean>) ()-> clusterDescriptor instanceof StandaloneClusterDescriptor);
 
     }
@@ -96,7 +95,7 @@ public class YarnClusterClientTest {
 
     @Test
     public void createYarnClusterDescriptor() throws IOException, FlinkException, FlinkClientTimeoutException {
-        clusterClient.getJobsRunStatus(Lists.newArrayList("7107643deaa489ad0a50b3611bef1c7f"))
+        clusterClient.getJobStatus(Lists.newArrayList("7107643deaa489ad0a50b3611bef1c7f"))
                 .forEach((k, v) -> System.out.println(k + "----" + v));
 
         Map<String, JobRunStatusEnum> jobRunStatusEnumMaps = clusterClient.getJobStatus(Lists.newArrayList("7107643deaa489ad0a50b3611bef1c7f"));
@@ -246,7 +245,7 @@ public class YarnClusterClientTest {
 
     @Test
     public void cancelJob() throws FlinkException, FlinkClientTimeoutException {
-        String savepointPath = clusterClient.cancelJob("2d217ae5aea9e3c2e1d7ca646817b5d4","hdfs://nameservice1/flink/savepoint");
+        String savepointPath = clusterClient.cancel("2d217ae5aea9e3c2e1d7ca646817b5d4","hdfs://nameservice1/flink/savepoint");
         log.info("savepointPath:{}",savepointPath);
     }
 

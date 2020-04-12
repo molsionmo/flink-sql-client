@@ -7,7 +7,7 @@ import com.github.mxb.flink.sql.exception.ClusterDeploymentException;
 import com.github.mxb.flink.sql.exception.ClusterKillException;
 import com.github.mxb.flink.sql.exception.ClusterRetrieveException;
 import com.github.mxb.flink.sql.cluster.ClusterClient;
-import com.github.mxb.flink.sql.cluster.client.JobManagerClusterClient;
+import com.github.mxb.flink.sql.cluster.client.JobManagerClient;
 import com.github.mxb.flink.sql.cluster.status.StandaloneClusterStatus;
 import com.github.mxb.flink.sql.cluster.status.standalone.StandaloneClusterReport;
 import com.github.mxb.flink.sql.util.OkHttpUtils;
@@ -57,7 +57,7 @@ public class StandaloneClusterDescriptor implements ClusterDescriptor<StandAlone
         flinkConfiguration.setString(RestOptions.ADDRESS, clusterId.getRestAddress());
         flinkConfiguration.setInteger(RestOptions.PORT, clusterId.getPort());
 
-        return new JobManagerClusterClient<>(flinkConfiguration);
+        return new JobManagerClient<>(flinkConfiguration);
     }
 
     @Override
