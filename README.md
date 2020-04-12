@@ -45,7 +45,7 @@
 ```java
 public class Test{
     public ClusterClient getClusterClient(){
-        ResourceInfo standaloneResourceInfo = new ResourceInfo();
+        FlinkResourceInfo standaloneResourceInfo = new FlinkResourceInfo();
         standaloneResourceInfo.setResourceType(ResourceType.STANDALONE);
 
         ClusterDescriptor clusterDescriptor = ClusterDescriptorFactory.createClusterDescriptor(standaloneResourceInfo);
@@ -63,7 +63,6 @@ public class Test{
         ProgramTargetDescriptor programTargetDescriptor = clusterClient.executeSqlJob(jobRunConfig, dependencyJars, sql);
         return programTargetDescriptor.getJobId();
     }
-
 }
 ```
 
@@ -82,6 +81,6 @@ UDF包动态加载 | 支持SQL job动态加载UDF包,每一个SQL job可以在�
 * 执行groupByTest用例时会出现InvalidClassException异常，local class incompatible serialVersionUID;解决:在flink-parent中修改对应的类并重新引入
 
 ```scala
-@scala.SerialVersionUID(value = 1)
+@SerialVersionUID(value = 1)
 abstract class ProcessFunctionWithCleanupState
 ```
