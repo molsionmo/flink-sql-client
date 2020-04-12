@@ -67,9 +67,20 @@ public class Test{
 }
 ```
 
+## 功能支持
+
+功能 | flink sql client sdk | flink sql client
+:--:|:--:|:--:|
+SQL任务提交 | 支持standalone集群, flink on yarn session集群的远程SQL任务提交,不同job提交线程隔离 | 支持standalone集群任务提交,需要启动单独进程
+任务操作 | 支持standalone集群, flink on yarn session集群的远程任务面向jobId进行stop(WithOrWithoutSavepoint),cancel(WithOrWithoutSavepoint),triggerSavepoint | 不支持
+任务执行状态查询 | 支持standalone集群, flink on yarn session集群的远程任务运行状态查询 | 不支持
+多Insert into任务支持 | 支持多Insert into语句的多Sink SQL任务 | 支持
+UDF包动态加载 | 支持SQL job动态加载UDF包,每一个SQL job可以在画图时指定特定的UDF包 | 不支持动态加载,需要预先加载不能再运行时动态加载
+
 ## 问题处理
 
 * 执行groupByTest用例时会出现InvalidClassException异常，local class incompatible serialVersionUID;解决:在flink-parent中修改对应的类并重新引入
+
 ```scala
 @scala.SerialVersionUID(value = 1)
 abstract class ProcessFunctionWithCleanupState
