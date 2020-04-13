@@ -37,7 +37,7 @@ Connector包动态加载 | 支持SQL job动态加载Connector包,每一个SQL jo
 
 ### 本地Minicluster模式
 
-* 运行com.github.mxb.flink.sql.executor.LocalExecutorTest里面的测试用例(可用于本地调试分布式任务)
+* 运行com.github.mxb.flink.sql.local.LocalClusterClientTest里面的测试用例(可用于本地调试分布式任务)
 
 ## sdk quick start
 
