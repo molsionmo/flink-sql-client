@@ -1,20 +1,22 @@
 package com.github.mxb.flink.sql.local;
 
+import com.github.mxb.flink.sql.cluster.AbstractClusterClient;
 import com.github.mxb.flink.sql.cluster.execution.ExecutionContext;
 import com.github.mxb.flink.sql.cluster.execution.ProgramDeployer;
+import com.github.mxb.flink.sql.cluster.model.run.overview.JobRunStatusEnum;
+import com.github.mxb.flink.sql.exception.FlinkClientTimeoutException;
 import com.github.mxb.flink.sql.local.command.LocalCustomCommandLine;
-import com.github.mxb.flink.sql.local.command.LocalExecutorConstants;
-import com.github.mxb.flink.sql.cluster.minicluster.MiniClusterResource;
+import com.github.mxb.flink.sql.local.minicluster.MiniClusterResource;
 import com.github.mxb.flink.sql.cluster.model.run.overview.JobRunOverview;
 import com.github.mxb.flink.sql.cluster.model.run.JobConfig;
 import com.github.mxb.flink.sql.cluster.model.run.JobRunConfig;
 import com.github.mxb.flink.sql.cluster.model.run.ProgramResultDescriptor;
 import com.github.mxb.flink.sql.parser.FlinkSqlParserUtil;
 import com.github.mxb.flink.sql.parser.SqlNodeInfo;
+import com.github.mxb.flink.sql.util.JarUtils;
 import org.apache.calcite.sql.SqlInsert;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.commons.cli.Options;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.api.common.JobID;
 import org.apache.flink.client.cli.CliFrontendParser;
 import org.apache.flink.client.cli.CustomCommandLine;
@@ -41,6 +43,7 @@ import org.apache.flink.util.FlinkException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -49,15 +52,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
- * LocalExecutor, create and start a miniCluster if do not have.
+ * LocalClusterClient, create and start a miniCluster if do not have.
  * Execute job in local environment
  *
  * @author moxianbin
  * @since 2020/4/8 17:01
  */
-public class LocalExecutor extends AbstractExecutor {
+public class LocalClusterClient<T> extends AbstractClusterClient<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LocalExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LocalClusterClient.class);
 
     private Configuration flinkConfig;
     private List<CustomCommandLine<?>> commandLines;
@@ -68,10 +71,17 @@ public class LocalExecutor extends AbstractExecutor {
     private MiniClusterResource miniClusterResource;
     private ClusterClient<?> clusterClient;
 
-    public LocalExecutor() {
+    public LocalClusterClient() {
     }
 
-    public LocalExecutor(MiniClusterResource miniClusterResource) {
+    public LocalClusterClient(int localTmNum, int localTmPerSlotsNum) throws Exception {
+
+        MiniClusterResource.MiniClusterResourceConfiguration miniClusterResourceConfiguration = new MiniClusterResource.MiniClusterResourceConfiguration(
+                localTmNum, localTmPerSlotsNum
+        );
+
+        MiniClusterResource miniClusterResource = new MiniClusterResource(miniClusterResourceConfiguration);
+        miniClusterResource.startCluster();
 
         this.clusterClient = miniClusterResource.getClusterClient();
         this.flinkConfig = clusterClient.getFlinkConfiguration();
@@ -81,54 +91,16 @@ public class LocalExecutor extends AbstractExecutor {
 
         resultStore = new ResultStore(this.flinkConfig);
         this.miniClusterResource = miniClusterResource;
-
-    }
-
-    public MiniClusterResource getMiniClusterResource() {
-        return miniClusterResource;
     }
 
     @Override
-    public Executor newInstance(Map<String, String> properties) throws Exception {
-
-        int localTmNum = Integer.valueOf(properties.get(LocalExecutorConstants.LOCAL_TM_NUM_KEY));
-        int localTmPerSlotsNum = Integer.valueOf(properties.get(LocalExecutorConstants.LOCAL_NUM_SLOTS_PER_TM_KEY));
-
-        MiniClusterResource.MiniClusterResourceConfiguration miniClusterResourceConfiguration = new MiniClusterResource.MiniClusterResourceConfiguration(
-                localTmNum, localTmPerSlotsNum
-        );
-
-        MiniClusterResource miniClusterResource = new MiniClusterResource(miniClusterResourceConfiguration);
-        miniClusterResource.startCluster();
-
-        return new LocalExecutor(miniClusterResource);
+    public String cancel(String jobId, String savepointDir) throws FlinkException, FlinkClientTimeoutException {
+        return null;
     }
 
     @Override
-    public List<String> supportedProperties() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<String> requiredProperties() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public String cancelJob(String jobId, String savepointDir) throws FlinkException {
-        String savepointPath = "";
-
-        try {
-            if (StringUtils.isNotBlank(savepointDir)) {
-                savepointPath = this.clusterClient.cancelWithSavepoint(JobID.fromHexString(jobId), savepointDir);
-            } else {
-                this.clusterClient.cancel(JobID.fromHexString(jobId));
-            }
-        } catch (Exception e){
-            throw new UndeclaredThrowableException(e);
-        }
-
-        return savepointPath;
+    public String stop(String jobId, String savepointDir) throws FlinkException, FlinkClientTimeoutException {
+        return null;
     }
 
     @Override
@@ -149,12 +121,18 @@ public class LocalExecutor extends AbstractExecutor {
     @Override
     public ProgramTargetDescriptor executeSqlJob(JobRunConfig jobRunConfig, String dependencyJarDir, String sql) throws SqlExecutionException, SqlParseException {
         JobConfig jobConfig = new JobConfig(jobRunConfig, new HashMap<>());
-        return executeSqlJob(jobConfig, dependencyJarDir, sql, flinkConfig, commandLineOptions, commandLines);
+        List<File> jarFiles = JarUtils.getJars(dependencyJarDir);
+        return executeSqlJob(jobConfig, jarFiles, sql, flinkConfig, commandLineOptions, commandLines);
     }
 
     @Override
-    public ProgramTargetDescriptor executeSqlJob(JobConfig jobConfig, String dependencyJarDir, String sql) throws SqlExecutionException, SqlParseException {
-        return executeSqlJob(jobConfig, dependencyJarDir, sql, flinkConfig, commandLineOptions, commandLines);
+    public ProgramTargetDescriptor executeSqlJob(JobConfig jobConfig, List<File> dependencyJars, String sql) throws FlinkException, SqlExecutionException, SqlParseException, FlinkClientTimeoutException {
+        return null;
+    }
+
+    @Override
+    public ProgramTargetDescriptor executeSqlJob(JobRunConfig jobRunConfig, List<File> dependencyJars, String sql) throws FlinkException, SqlExecutionException, SqlParseException, FlinkClientTimeoutException {
+        return null;
     }
 
     @Override
@@ -162,7 +140,8 @@ public class LocalExecutor extends AbstractExecutor {
         final Environment sessionEnv = new Environment();
         final SessionContext session = new SessionContext(jobRunConfig.getJobName(), sessionEnv);
 
-        final ExecutionContext<?> context = getExecutionContext(jobRunConfig, dependencyJarDir, flinkConfig, commandLineOptions, commandLines, session);
+        List<File> jarFiles = JarUtils.getJars(dependencyJarDir);
+        final ExecutionContext<?> context = getExecutionContext(jobRunConfig, jarFiles, flinkConfig, commandLineOptions, commandLines, session);
         final ExecutionContext.EnvironmentInstance envInst = context.getEnvironmentInstance();
 
         List<SqlNodeInfo> sqlNodeList = FlinkSqlParserUtil.parseSqlContext(sql);
@@ -235,20 +214,7 @@ public class LocalExecutor extends AbstractExecutor {
     }
 
     @Override
-    public ProgramResultDescriptor retrieveResult(String jobId) {
-        List<Row> resultRows = retrieveTableResult(jobId);
-
-        DynamicResult dynamicResult = resultStore.getResult(jobId);
-
-        return ProgramResultDescriptor.builder()
-                .jobId(jobId)
-                .isMaterialized(dynamicResult.isMaterialized())
-                .resultRows(resultRows)
-                .build();
-    }
-
-    @Override
-    public Map<String, String> getJobsRunStatus(List<String> jobIds) {
+    public Map<String, JobRunStatusEnum> getJobStatus(List<String> jobIds) throws FlinkException, FlinkClientTimeoutException {
         return null;
     }
 
@@ -258,8 +224,8 @@ public class LocalExecutor extends AbstractExecutor {
     }
 
     @Override
-    public void start() throws SqlExecutionException {
-
+    public Map<String, String> getJobsOverviewUrl(List<String> jobIds) {
+        return null;
     }
 
     private static Options collectCommandLineOptions(List<CustomCommandLine<?>> commandLines) {

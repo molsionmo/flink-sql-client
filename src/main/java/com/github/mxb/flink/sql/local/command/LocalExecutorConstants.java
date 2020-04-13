@@ -1,7 +1,5 @@
 package com.github.mxb.flink.sql.local.command;
 
-import com.github.mxb.flink.sql.factory.ExecutorFactory;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,7 +14,7 @@ public class LocalExecutorConstants {
 
     public static final String LOCAL_TM_NUM_KEY = "localTmNum";
     public static final String LOCAL_NUM_SLOTS_PER_TM_KEY = "localNumSlotsPerTm";
-    public static final String PROVIDER_KEY = ExecutorFactory.PROVIDER_KEY;
+    public static final String PROVIDER_KEY = "provider";
 
     private static final String[] optionalJobRunConfigKey = new String[]{
     };

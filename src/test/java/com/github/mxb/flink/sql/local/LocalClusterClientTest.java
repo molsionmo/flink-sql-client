@@ -1,8 +1,6 @@
 package com.github.mxb.flink.sql.local;
 
 import com.github.mxb.flink.sql.exception.FlinkClientTimeoutException;
-import com.github.mxb.flink.sql.factory.ExecutorFactory;
-import com.github.mxb.flink.sql.cluster.minicluster.MiniClusterResource;
 import com.github.mxb.flink.sql.cluster.model.run.JobRunConfig;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
@@ -16,9 +14,9 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
-public class LocalExecutorTest {
+public class LocalClusterClientTest {
 
-    LocalExecutor localExecutor;
+    LocalClusterClient localClusterClient;
 
     private int numberTaskManagers = 4;
     private int numberSlotsPerTaskManager = 4;
@@ -26,10 +24,7 @@ public class LocalExecutorTest {
 
     @Before
     public void setUp() throws Exception {
-        MiniClusterResource.MiniClusterResourceConfiguration miniClusterResourceConfiguration =
-                new MiniClusterResource.MiniClusterResourceConfiguration(numberTaskManagers, numberSlotsPerTaskManager);
-
-        localExecutor = ExecutorFactory.createExecutor(miniClusterResourceConfiguration);
+        localClusterClient = new LocalClusterClient(numberTaskManagers, numberSlotsPerTaskManager);
     }
 
     @After
@@ -44,7 +39,7 @@ public class LocalExecutorTest {
         String dependencyJarDir =dependencyJarsDir;
         String sql = Files.toString(new File(getClass().getClassLoader().getResource("sqlsumbit/kafkaToMysql.sql").getPath()), Charsets.UTF_8);
 
-        ProgramTargetDescriptor targetDescriptor = localExecutor.executeSqlJob(jobRunConfig1, dependencyJarDir, sql);
+        ProgramTargetDescriptor targetDescriptor = localClusterClient.executeSqlJob(jobRunConfig1, dependencyJarDir, sql);
 
         Thread.sleep(200_000);
     }
@@ -57,7 +52,7 @@ public class LocalExecutorTest {
         String dependencyJarDir =dependencyJarsDir;
         String sql = Files.toString(new File(getClass().getClassLoader().getResource("sqlsumbit/pvuv_kafkaToMysql_groupBy.sql").getPath()), Charsets.UTF_8);
 
-        ProgramTargetDescriptor targetDescriptor = localExecutor.executeSqlJob(jobRunConfig1, dependencyJarDir, sql);
+        ProgramTargetDescriptor targetDescriptor = localClusterClient.executeSqlJob(jobRunConfig1, dependencyJarDir, sql);
 
         Thread.sleep(200_000);
     }

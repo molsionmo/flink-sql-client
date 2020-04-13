@@ -1,4 +1,4 @@
-package com.github.mxb.flink.sql.cluster.minicluster;
+package com.github.mxb.flink.sql.local.minicluster;
 
 /**
  * MiniClusterManage control the number of miniClusterResource.

@@ -1,4 +1,4 @@
-package com.github.mxb.flink.sql.cluster.minicluster;
+package com.github.mxb.flink.sql.local.minicluster;
 
 import com.github.mxb.flink.sql.local.command.LocalExecutorConstants;
 import org.apache.flink.api.common.time.Time;
