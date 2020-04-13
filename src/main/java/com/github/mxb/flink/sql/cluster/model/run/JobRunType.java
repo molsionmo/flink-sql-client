@@ -2,7 +2,7 @@ package com.github.mxb.flink.sql.cluster.model.run;
 
 /**
  * @author moxianbin
- * @since 2019/5/22 16:37
+ * @since 2020/4/12 16:37
  */
 public enum  JobRunType {
 

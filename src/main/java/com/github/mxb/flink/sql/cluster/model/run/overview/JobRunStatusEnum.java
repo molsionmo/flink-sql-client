@@ -4,7 +4,7 @@ package com.github.mxb.flink.sql.cluster.model.run.overview;
  * <p>JobRunStatusEnum</p>
  *
  * @author moxianbin
- * @since 2019/5/9 16:40
+ * @since 2020/4/9 16:40
  */
 public enum JobRunStatusEnum {
 
