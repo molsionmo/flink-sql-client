@@ -67,10 +67,10 @@ public class ClusterDescriptorFactory {
         }
 
         YarnConfiguration yarnConfiguration = new YarnConfiguration();
+        String tmpYarnConfPath = copyYarnConfToFile(flinkResourceInfo.getYarnRmAddress(), flinkResourceInfo.getResourceId());
+        yarnConfiguration.addResource(new Path(tmpYarnConfPath));
 
         if (flinkResourceInfo.getAuthType() == AuthType.KERBEROS) {
-            String tmpYarnConfPath = copyYarnConfToFile(flinkResourceInfo.getYarnRmAddress(), flinkResourceInfo.getResourceId());
-            yarnConfiguration.addResource(new Path(tmpYarnConfPath));
             // init system property
             System.setProperty(YarnClusterConfig.KRB5_CONF, StringUtils.isBlank(flinkResourceInfo.getKrb5ConfFilePath()) ? DEFAULT_KRB_5_CONF : flinkResourceInfo.getKrb5ConfFilePath());
             System.setProperty(YarnClusterConfig.KRB5_REALM, flinkResourceInfo.getKrb5Realm());
