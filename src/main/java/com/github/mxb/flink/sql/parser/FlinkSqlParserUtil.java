@@ -13,7 +13,7 @@ import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Frameworks;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.sql.parser.impl.FlinkSqlParserImpl;
-import org.apache.flink.table.planner.calcite.FlinkPlannerImpl;
+import org.apache.flink.table.calcite.FlinkPlannerImpl;
 
 import java.util.ArrayList;
 import java.util.List;

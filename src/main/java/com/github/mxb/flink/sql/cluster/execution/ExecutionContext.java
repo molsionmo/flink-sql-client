@@ -493,6 +493,10 @@ public class ExecutionContext<T> {
         }
 
         private void registerFunctions() {
+            registerFunctions(functions);
+        }
+
+        public void registerFunctions(Map<String, UserDefinedFunction> functions){
             if (tableEnv instanceof StreamTableEnvironment) {
                 StreamTableEnvironment streamTableEnvironment = (StreamTableEnvironment) tableEnv;
                 functions.forEach((k, v) -> {

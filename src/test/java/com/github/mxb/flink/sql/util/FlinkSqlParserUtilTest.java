@@ -2,13 +2,19 @@ package com.github.mxb.flink.sql.util;
 
 import com.github.mxb.flink.sql.parser.FlinkSqlParserUtil;
 import com.github.mxb.flink.sql.parser.SqlNodeInfo;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.sql.parser.SqlParseException;
+import org.apache.flink.table.client.cli.SqlCommandParser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class FlinkSqlParserUtilTest {
@@ -19,6 +25,14 @@ public class FlinkSqlParserUtilTest {
 
     @After
     public void tearDown() throws Exception {
+    }
+
+    // do not support in 1.9.1; will implement in 1.10.0
+    @Test
+    public void createFunctionSqlContext() throws IOException {
+        String sql = Files.toString(new File(getClass().getClassLoader().getResource("sqlsumbit/kafkaToMysqlAndCreateFunction.sql").getPath()), Charsets.UTF_8);
+        List<SqlNodeInfo> sqlNodeInfos = FlinkSqlParserUtil.parseSqlContext(sql);
+        log.info("{}", sql);
     }
 
     @Test
