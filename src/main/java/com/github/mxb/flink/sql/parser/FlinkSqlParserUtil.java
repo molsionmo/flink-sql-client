@@ -13,7 +13,7 @@ import org.apache.calcite.tools.FrameworkConfig;
 import org.apache.calcite.tools.Frameworks;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.flink.sql.parser.impl.FlinkSqlParserImpl;
-import org.apache.flink.table.calcite.FlinkPlannerImpl;
+import org.apache.flink.table.planner.calcite.FlinkPlannerImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,6 @@ public class FlinkSqlParserUtil {
     }
 
     public static List<SqlNodeInfo> parseSqlContext(String sql){
-        // TODO FlinkPlannerImpl有 flink 与 blink 2个 当前使用的是blink
         FlinkPlannerImpl planner = new FlinkPlannerImpl(FRAMEWORK_CONFIG,null,null,null);
         List<SqlInfo> sqlInfos = SqlLists.getSQLList(sql);
 
