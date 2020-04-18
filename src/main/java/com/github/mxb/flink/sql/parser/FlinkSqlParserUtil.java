@@ -35,6 +35,12 @@ public class FlinkSqlParserUtil {
         FRAMEWORK_CONFIG = Frameworks.newConfigBuilder().defaultSchema(ROOT_SCHEMA).parserConfig(PARSER_CONFIG).typeSystem(RelDataTypeSystem.DEFAULT).build();
     }
 
+    /**
+     * parseSqlContext 当前不支持 create function 语法; 可以单独为create function 语法执行逻辑分支进行分析并返回;
+     * 支持create table;create view;insert into
+     * @param sql
+     * @return
+     */
     public static List<SqlNodeInfo> parseSqlContext(String sql){
         FlinkPlannerImpl planner = new FlinkPlannerImpl(FRAMEWORK_CONFIG,null,null,null);
         List<SqlInfo> sqlInfos = SqlLists.getSQLList(sql);
