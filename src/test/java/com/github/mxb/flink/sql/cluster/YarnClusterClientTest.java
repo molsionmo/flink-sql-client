@@ -111,7 +111,7 @@ public class YarnClusterClientTest {
     }
 
     @Test
-    public void executeSqlJob() throws FlinkException, FlinkClientTimeoutException, SqlParseException {
+    public void executeSqlJob() throws FlinkException, FlinkClientTimeoutException, SqlParseException, IOException {
         // executeSqlJob
         JobRunConfig jobRunConfig = JobRunConfig.builder()
                 .jobName(getTestJobName())
@@ -119,125 +119,7 @@ public class YarnClusterClientTest {
                 .sourceParallelism(1)
                 .checkpointInterval(60_000L).build();
         String dependencyJarDir = dependencyJarsDir;
-        String sql = "CREATE TABLE t(key VARBINARY, msg VARBINARY, `topic` VARCHAR, `partition` INT, `offset` bigint)with(type = 'KAFKA011PLUS',topic = 'abc',`bootstrap.servers` = 'bigdata85:9092,bigdata86:9092,bigdata87:9092',`group.id` = 'test-group',startupMode = 'EARLIEST');" +
-                "CREATE TABLE MyResult(kkey varchar,msg varchar,PRIMARY KEY(kkey))" +
-                "  WITH(type='JDBC',drivername='com.mysql.jdbc.Driver'," +
-                "dburl='jdbc:mysql://192.168.102.70:3306/test?charset=utf8&autoReconnect=true&characterEncoding=utf8'," +
-                "username='root',password='ppIT@jiedai.1234',tablename='mytb'," +
-                "`batch.interval`='5');" +
-                "insert into MyResult(kkey,msg) SELECT CAST (t.msg AS VARCHAR) as tmsg, CAST (t.key AS VARCHAR) as ttkey FROM t where CAST (t.msg AS VARCHAR) like '%我们%';";
-        ProgramTargetDescriptor targetDescriptor = clusterClient.executeSqlJob(jobRunConfig,dependencyJarDir,sql);
-
-        log.info("jobId:{}", targetDescriptor.getJobId());
-    }
-
-    @Test
-    public void joinJdbc() throws Exception {
-        // executeSqlJob1
-        JobRunConfig jobRunConfig1 = JobRunConfig.builder().jobName(getTestJobName())
-                .defaultParallelism(1)
-                .build();
-
-        String dependencyJarDir = dependencyJarsDir;
-
-        String sql = Files.toString(new File(getClass().getClassLoader().getResource("join-jdbc.sql").getPath()), Charsets.UTF_8);
-
-        ProgramTargetDescriptor targetDescriptor = clusterClient.executeSqlJob(jobRunConfig1, dependencyJarDir, sql);
-        log.info("jobId:{}", targetDescriptor.getJobId());
-    }
-
-    @Test
-    public void joinHbase() throws Exception {
-        // executeSqlJob1
-        JobRunConfig jobRunConfig1 = JobRunConfig.builder().jobName(getTestJobName())
-                .defaultParallelism(1)
-                .build();
-
-        String dependencyJarDir = dependencyJarsDir;
-        String sql = Files.toString(new File(getClass().getClassLoader().getResource("join-hbase.sql").getPath()), com.google.common.base.Charsets.UTF_8);
-
-        ProgramTargetDescriptor targetDescriptor = clusterClient.executeSqlJob(jobRunConfig1, dependencyJarDir, sql);
-        log.info("jobId:{}", targetDescriptor.getJobId());
-    }
-
-    @Test
-    public void moreSource() throws FlinkException, FlinkClientTimeoutException, SqlParseException {
-        JobRunConfig jobRunConfig = JobRunConfig.builder()
-                .jobName(getTestJobName())
-                .defaultParallelism(1)
-                .sourceParallelism(1)
-                .checkpointInterval(60_000L).build();
-        String dependencyJarDir = dependencyJarsDir;
-
-        String sql = "CREATE TABLE userInfo(\n" +
-                "\t`userId` int,\n" +
-                "    `age` int ,\n" +
-                "    `name` VARCHAR,\n" +
-                "    `loginTime` TIMESTAMP,\n" +
-                "    watermark for `loginTime` as withoffset(`loginTime`, 1000)"+
-                "    ) \n" +
-                "    with (\n" +
-                "        type = 'KAFKA011PLUS', \n" +
-                "        topic = 'userInfo', \n" +
-                "        `bootstrap.servers` = 'bigdata85:9092,bigdata86:9092,bigdata87:9092,',\n" +
-                "        `group.id` = 'test-group', \n" +
-                "        startupMode = 'EARLIEST', \n" +
-                "        `kafka.schema`='json'\n" +
-                "        );\n" +
-                "\t\t\n" +
-                "CREATE TABLE userInvest(\n" +
-                "    `userId` int,\n" +
-                "    `investAmount` BIGINT\n" +
-                "    ) \n" +
-                "    with (\n" +
-                "        type = 'KAFKA011PLUS', \n" +
-                "        topic = 'userInvest', \n" +
-                "        `bootstrap.servers` = 'bigdata85:9092,bigdata86:9092,bigdata87:9092,',\n" +
-                "        `group.id` = 'test-group', \n" +
-                "        startupMode = 'EARLIEST', \n" +
-                "        `kafka.schema`='json'\n" +
-                "        );\n" +
-                "\n" +
-                "CREATE TABLE myResult(\n" +
-                "\t`userId` int,\n" +
-                "    `age` int ,\n" +
-                "    `name` VARCHAR,\n" +
-                "\t`investAmount` BIGINT\n" +
-                "\t)\n" +
-                "\twith (\n" +
-                "\t\ttype='JDBC',\n" +
-                "\t\tdrivername='com.mysql.jdbc.Driver',\n" +
-                "\t\tusername='root',\n" +
-                "\t\tdburl='jdbc:mysql://192.168.102.70:3306/test?charset=utf8&autoReconnect=true&characterEncoding=utf8',\n" +
-                "\t\tpassword='ppIT@jiedai.1234',\n" +
-                "\t\ttablename='userInvest',\n" +
-                "\t\t`batch.interval`='5'\n" +
-                "\t);\n" +
-                "\t\n" +
-                "insert into myResult(`userId`,`age`,`name`,`investAmount`)\n" +
-                "select info.`userId`,info.`age`,info.`name`,invest.`investAmount`\n" +
-                "from userInfo as info\n" +
-                "join userInvest as invest\n" +
-                "on info.`userId` = invest.`userId`";
-
-        ProgramTargetDescriptor targetDescriptor = clusterClient.executeSqlJob(jobRunConfig,dependencyJarDir,sql);
-
-        log.info("jobId:{}", targetDescriptor.getJobId());
-    }
-
-    @Test
-    public void newKafkaSinkJdbc() throws SqlParseException, FlinkException, FlinkClientTimeoutException {
-        // executeSqlJob
-        JobRunConfig jobRunConfig = JobRunConfig.builder()
-                .jobName(getTestJobName())
-                .defaultParallelism(1)
-                .sourceParallelism(1)
-                .checkpointInterval(60_000L).build();
-
-        String dependencyJarDir = dependencyJarsDir;
-        String sql = "CREATE TABLE t(key VARCHAR,`user.name` VARCHAR ,`user.age` INT ,`grade` VARCHAR, `create_time` TIMESTAMP(3), `ctime` TIMESTAMP(3),`etime` TIMESTAMP(3), watermark for `etime` as withoffset(`etime`, 1000), PRIMARY KEY(key) ) with (type = 'KAFKA011PLUS', topic = 'axyzjson2source', `bootstrap.servers` = 'bigdata85:9092,bigdata86:9092,bigdata87:9092,', `group.id` = 'test-group', startupMode = 'EARLIEST', `kafka.schema`='json2');" +
-                "CREATE TABLE kafka_sink(key VARCHAR, `user.sinkname` VARCHAR ,`user.sinkage` INT ,`user.sinkgrade` VARCHAR, `sinkctime` TIMESTAMP(3), PRIMARY KEY (key)) with (type = 'KAFKA011', topic = 'axyzjson2sink', `bootstrap.servers` = 'bigdata85:9092,bigdata86:9092,bigdata87:9092,', retries = '3');" +
-                "INSERT INTO kafka_sink (key , `user.sinkname`  ,`user.sinkage`  ,`user.sinkgrade` , `sinkctime`)  select key ,`user.name`  ,`user.age`  ,`grade` ,TUMBLE_end(etime, INTERVAL '1' MINUTE)  from t GROUP BY TUMBLE(etime, INTERVAL '1' MINUTE),key ,`user.name`  ,`user.age`  ,`grade`";
+        String sql = Files.toString(new File(getClass().getClassLoader().getResource("sqlsumbit/kafkaToMysql.sql").getPath()), Charsets.UTF_8);
         ProgramTargetDescriptor targetDescriptor = clusterClient.executeSqlJob(jobRunConfig,dependencyJarDir,sql);
 
         log.info("jobId:{}", targetDescriptor.getJobId());
@@ -247,35 +129,6 @@ public class YarnClusterClientTest {
     public void cancelJob() throws FlinkException, FlinkClientTimeoutException {
         String savepointPath = clusterClient.cancel("2d217ae5aea9e3c2e1d7ca646817b5d4","hdfs://nameservice1/flink/savepoint");
         log.info("savepointPath:{}",savepointPath);
-    }
-
-    @Test
-    public void cdc_savepoint_restart() throws IOException, FlinkException, FlinkClientTimeoutException, SqlParseException {
-        // executeSqlJob
-        JobRunConfig jobRunConfig = JobRunConfig.builder()
-                .jobName(getTestJobName())
-                .defaultParallelism(1)
-                .restoreSavePointPath("hdfs://nameservice1/flink/savepoint/default01/savepoint-23b9f8-9dcad109e17b")
-                .isAllowNonRestoredState(true)
-                .checkpointInterval(60_000L).build();
-
-        String dependencyJarDir = dependencyJarsDir;
-
-        String sql = Files.toString(new File(getClass().getClassLoader().getResource("./fix/cdc_savepoint.sql").getPath()), Charsets.UTF_8);
-        ProgramTargetDescriptor targetDescriptor = clusterClient.executeSqlJob(jobRunConfig,dependencyJarDir,sql);
-    }
-
-    @Test
-    public void cdc_savepoint_consistent() throws IOException, SqlParseException, InterruptedException, FlinkException, FlinkClientTimeoutException {
-        // executeSqlJob
-        JobRunConfig jobRunConfig = JobRunConfig.builder()
-                .jobName(getTestJobName())
-                .defaultParallelism(1)
-                .checkpointInterval(60_000L).build();
-        String dependencyJarDir = dependencyJarsDir;
-        String sql = Files.toString(new File(getClass().getClassLoader().getResource("./fix/cdc_savepoint_consistent.sql").getPath()), Charsets.UTF_8);
-
-        ProgramTargetDescriptor targetDescriptor = clusterClient.executeSqlJob(jobRunConfig,dependencyJarDir,sql);
     }
 
     private String getTestJobName(){

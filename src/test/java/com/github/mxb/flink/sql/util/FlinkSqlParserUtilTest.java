@@ -44,10 +44,10 @@ public class FlinkSqlParserUtilTest {
                 ") with (\n" +
                 "    'connector.type' = 'kafka',\n" +
                 "    'connector.version' = '0.11',\n" +
-                "    connector.topic = 'topic_name',\n" +
+                "    'connector.topic' = 'topic_name',\n" +
                 "    'connector.properties.group.id' = 'testGroup',\n" +
                 "    'connector.startup-mode' = 'earliest-offset',\n" +
-                "    connector.properties.bootstrap.servers = 'localhost:9092',\n" +
+                "    'connector.properties.bootstrap.servers' = 'localhost:9092',\n" +
                 "    'format.type' = 'json'\n" +
                 ");\n" +
                 "create table dbo_Whir_Member_Member (\n" +
@@ -57,26 +57,11 @@ public class FlinkSqlParserUtilTest {
                 ") with (\n" +
                 "    'connector.type' = 'kafka',\n" +
                 "    'connector.version' = '0.11',\n" +
-                "    connector.topic = 'topic_name',\n" +
+                "    'connector.topic' = 'topic_name',\n" +
                 "    'connector.properties.group.id' = 'testGroup',\n" +
                 "    'connector.startup-mode' = 'earliest-offset',\n" +
-                "    connector.properties.bootstrap.servers = 'localhost:9092',\n" +
+                "    'connector.properties.bootstrap.servers' = 'localhost:9092',\n" +
                 "    'format.type' = 'json'\n" +
-                ");\n" +
-                "create table cdcSource (\n" +
-                "    key varchar,\n" +
-                "    ums varchar,\n" +
-                "    `table` varchar\n" +
-                ") with (\n" +
-                "    type = 'SQLSERVER_CDC',\n" +
-                "    `name` = 'licai_test_sqlserver.ppmoney_whtr_data_QY',\n" +
-                "    `dbHostName` = '192.168.107.18',\n" +
-                "    `dbPort` = '1433',\n" +
-                "    `dbUser` = 'u_wangjianwen',\n" +
-                "    `dbPassword` = 'W6sS69Eb4HahuJwG3ugg',\n" +
-                "    `dbName` = 'ppmoney_whtr_data_QY',\n" +
-                "    `dbServerName` = 'SQLSERVER',\n" +
-                "    `table` = 'dbo.CouponOrigin,dbo.Whir_Member_Member'\n" +
                 ");\n" +
                 "create view cdcView(key,ums,`table`) as select key,ums,`table` from cdcSource;\n" +
                 "insert into dbo_CouponOrigin\n" +
