@@ -54,5 +54,7 @@ public class JobRunConfig {
 
     private Boolean isDetached = true;
 
+    private FlinkPlanner flinkPlanner = FlinkPlanner.old;
+
     //TODO restart strategy config
 }

@@ -1,5 +1,6 @@
 package com.github.mxb.flink.sql.cluster;
 
+import com.github.mxb.flink.sql.cluster.model.run.FlinkPlanner;
 import com.github.mxb.flink.sql.exception.FlinkClientTimeoutException;
 import com.github.mxb.flink.sql.cluster.execution.ExecutionContext;
 import com.github.mxb.flink.sql.cluster.execution.ProgramDeployer;
@@ -34,6 +35,7 @@ import org.apache.flink.table.functions.UserDefinedFunction;
 import org.apache.flink.util.FlinkException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.jvm.hotspot.memory.PlaceholderEntry;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,9 +56,11 @@ public abstract class AbstractClusterClient<T> implements ClusterClient<T> {
     private static final AtomicInteger TMP_VIEW_SEQUENCE_ID = new AtomicInteger(0);
 
     private static final String EXECUTION_TYPE_KEY = "{EXECUTION_TYPE}";
+    private static final String PLANNER_KEY = "{PLANNER}";
 
     protected static String defaultEnvSchema =
             "execution:\n" +
+                    "  planner: " + PLANNER_KEY + "\n" +
                     "  type: " + EXECUTION_TYPE_KEY + "\n" +
                     "  time-characteristic: event-time\n" +
                     "  periodic-watermarks-interval: 200\n" +
@@ -155,6 +159,11 @@ public abstract class AbstractClusterClient<T> implements ClusterClient<T> {
             envSchema = envSchema.replace(EXECUTION_TYPE_KEY, JobRunType.STREAMING.name().toLowerCase());
         }
 
+        if (null != jobRunConfig.getFlinkPlanner()){
+            envSchema = envSchema.replace(PLANNER_KEY, jobRunConfig.getFlinkPlanner().name());
+        } else {
+            envSchema = envSchema.replace(PLANNER_KEY, FlinkPlanner.old.name());
+        }
 
         if (StringUtils.isNotBlank(jobRunConfig.getRestoreSavePointPath())) {
             envSchema += "\ndeployment:\n" + "  s: " + jobRunConfig.getRestoreSavePointPath();
