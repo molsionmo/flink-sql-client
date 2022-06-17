@@ -19,7 +19,7 @@
         <avatica-core.version>1.15.0</avatica-core.version>
 
         <lombok.version>1.16.20</lombok.version>
-        <fast-json.version>1.2.54</fast-json.version>
+        <fast-json.version>1.2.83</fast-json.version>
         <okhttp.version>3.8.1</okhttp.version>
 
         <mysql.version>5.1.45</mysql.version>
